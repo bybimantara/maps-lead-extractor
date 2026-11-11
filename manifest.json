@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Maps Lead Extractor",
+  "version": "1.0.0",
+  "description": "Ekstrak data bisnis & prospek (nama, telepon, alamat, rating, website) dari Google Maps ke CSV dan JSON.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "*://www.google.com/maps/*",
+    "*://maps.google.com/*"
+  ],
+  "background": {
+    "service_worker": "scripts/background.js"
+  },
+  "action": {
+    "default_title": "Buka Maps Lead Extractor"
+  },
+  "side_panel": {
+    "default_path": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.google.com/maps/*",
+        "*://maps.google.com/*"
+      ],
+      "js": [
+        "scripts/extractor.js",
+        "scripts/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

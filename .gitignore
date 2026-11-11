@@ -1,0 +1,39 @@
+# Vibecoding markdown & agent rules (jangan commit markdown docs)
+*.md
+!README.md
+docs/
+.cursor/
+.github/
+
+# Scratch & temporary scripts
+scripts/*.ps1
+scripts/generate_icons.js
+icons/
+
+# Secrets & env
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+vendor/
+
+# Build & cache
+dist/
+build/
+out/
+.next/
+target/
+__pycache__/
+*.pyc
+.cache/
+coverage/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.log
