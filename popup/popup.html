@@ -26,6 +26,24 @@
     <div id="statusText" class="status-text">Siap mengekstrak data dari Google Maps.</div>
   </section>
 
+  <!-- Filter & Target Settings -->
+  <section class="settings-card" aria-label="Pengaturan Scraping">
+    <div class="settings-row">
+      <label for="inputMaxLeads" class="settings-label">Batas Maksimal Leads</label>
+      <input type="number" id="inputMaxLeads" class="input-number" min="0" max="5000" placeholder="Tanpa batas">
+    </div>
+    <div class="filter-row">
+      <label class="filter-chip">
+        <input type="checkbox" id="chkOnlyPhone">
+        <span>Wajib Ada Telepon</span>
+      </label>
+      <label class="filter-chip">
+        <input type="checkbox" id="chkOnlyWebsite">
+        <span>Wajib Ada Website</span>
+      </label>
+    </div>
+  </section>
+
   <!-- Action Controls -->
   <section class="controls">
     <div class="btn-row">
@@ -51,7 +69,10 @@
 
   <!-- Preview Table -->
   <section class="preview-section">
-    <span class="section-title">Pratinjau Data (5 Terbaru)</span>
+    <div class="preview-header">
+      <span id="previewTitle" class="section-title">Pratinjau Data</span>
+      <input type="search" id="searchPreview" class="input-search" placeholder="Cari nama / telepon..." aria-label="Cari data pratinjau">
+    </div>
     <div class="table-wrapper">
       <table id="previewTable">
         <thead>

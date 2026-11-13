@@ -147,6 +147,99 @@ body {
   text-overflow: ellipsis;
 }
 
+/* Settings & Filters */
+.settings-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.settings-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.input-number {
+  width: 112px;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 6px 8px;
+  text-align: right;
+}
+
+.input-number:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.filter-chip:hover {
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.filter-chip input[type="checkbox"] {
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.filter-chip input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+}
+
+.filter-chip:has(input:checked) {
+  border-color: var(--primary);
+  color: var(--text);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.filter-chip:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 /* Action Controls */
 .controls {
   display: flex;
@@ -244,6 +337,27 @@ button:disabled {
   flex-direction: column;
   gap: 8px;
   min-height: 160px;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.input-search {
+  width: 165px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 5px 8px;
+}
+
+.input-search::placeholder {
+  color: var(--text-muted);
 }
 
 .section-title {
