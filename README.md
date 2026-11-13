@@ -9,8 +9,11 @@ Runs entirely inside your browser. No external servers, no account required, and
 - **Side Panel Interface**: Stays open beside your Google Maps tab using the Chrome Side Panel API without closing when you interact with the map.
 - **In-Page Extraction**: Reads data directly from the active Google Maps DOM (`div[role="feed"]` and detail panels) without opening external tabs or third-party web scrapers.
 - **Human-like Scroll Engine**: Scrolls search results smoothly with randomized delays (1.2s to 2.4s) to emulate natural browsing and prevent DOM flooding.
-- **Deep Detail Parsing**: Clicks listings to parse full address, phone number, operating hours, and website URLs via resilient semantic selectors (`data-item-id`).
-- **In-Memory Deduplication**: Tracks places by unique place URL and ID, preventing duplicate records across multiple searches in the same session.
+- **Deep Detail Parsing**: Clicks listings to parse full address, phone number, operating hours, and website URLs via resilient semantic selectors (`data-item-id`) and verifies the active detail panel title before merging.
+- **Max Leads Limit**: Lets you set an optional extraction quota (e.g., stop automatically after 50 or 100 leads).
+- **Quick Filters**: Filter results during scraping to keep only businesses with a phone number, a website URL, or both.
+- **Live Preview Search**: Search extracted records directly inside the side panel by business name, category, phone number, or address.
+- **Place ID Deduplication**: Tracks venues by Google Maps Place ID (`CID` / `ChIJ`) and URL, keeping separate branches with identical names distinct while avoiding duplicate rows.
 - **Excel-Safe CSV Export**: Prepends a UTF-8 BOM (`\uFEFF`) and wraps phone numbers in formula strings (`="08..."`) so Microsoft Excel and Google Sheets do not drop leading zeros or misinterpret country codes.
 - **JSON Export**: Provides structured data ready for developer pipelines, databases, or CRM ingestion.
 - **Local Storage Persistence**: Saves progress to `chrome.storage.local` automatically so data is preserved if the panel is closed.
@@ -50,10 +53,11 @@ This extension is built with pure Vanilla JavaScript and requires no build steps
 1. Go to [Google Maps](https://www.google.com/maps).
 2. Enter a search query for local businesses (for example: `Bakeries in Austin` or `Dental clinics in Surabaya`).
 3. Click the **Maps Lead Extractor** icon in your toolbar to open the side panel.
-4. Click **Start Scraping**.
-5. The extension will automatically scroll the results feed, load detail cards, update the live counter, and show recent entries in the preview table.
-6. When scraping finishes or when you click **Stop**, click **Download CSV (Excel)** or **Download JSON** to save your dataset.
-7. Use **Clear Data** when you want to start a fresh collection.
+4. Optionally set a **Max Leads** limit or toggle **Only with Phone** / **Only with Website** filters before starting.
+5. Click **Start Scraping**.
+6. The extension will automatically scroll the results feed, load detail cards, update the live counter, and show recent entries in the searchable preview table.
+7. When scraping finishes or when you click **Stop**, click **Download CSV (Excel)** or **Download JSON** to save your dataset.
+8. Use **Clear Data** when you want to start a fresh collection.
 
 ## Project Structure
 
