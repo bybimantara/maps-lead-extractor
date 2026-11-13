@@ -53,15 +53,24 @@ const MapsExtractor = {
         phone = phoneMatch[0].trim();
       }
 
-      // Deteksi kategori (biasanya sebelum titik tengah · )
+      // Deteksi kategori & fallback alamat (biasanya dipisahkan titik tengah · )
       if (line.includes('·')) {
-        const parts = line.split('·').map(p => p.trim());
+        const parts = line.split('·').map(p => p.trim()).filter(Boolean);
         if (!category && parts[0]) category = parts[0];
+        if (!address && parts.length > 1) {
+          const candidate = parts.find((part, idx) =>
+            idx > 0 &&
+            !/(?:\+62|08|02[1-9]|\(0[1-9]+\))\s?[0-9\-\s.]{6,15}/.test(part) &&
+            !/^[$€£¥Rp]+$/i.test(part) &&
+            !/^(Buka|Tutup|Open|Closed)/i.test(part)
+          );
+          if (candidate) address = candidate;
+        }
       }
     });
 
     return {
-      id: mapsUrl ? this.cleanPlaceId(mapsUrl) : this.slugify(title),
+      id: mapsUrl ? (this.cleanPlaceId(mapsUrl) || this.slugify(title)) : this.slugify(title),
       title: title.trim(),
       category: category.trim(),
       rating,
@@ -78,14 +87,34 @@ const MapsExtractor = {
   /**
    * Ekstrak dari panel detail aktif (saat kartu diklik)
    * Menggunakan atribut semantik stabil data-item-id
+   * @param {string} expectedTitle - Judul kartu yang diharapkan agar tidak membaca panel basi
    */
-  extractFromDetailPanel() {
-    const mainPane = document.querySelector('[role="main"]');
+  extractFromDetailPanel(expectedTitle = '') {
+    const panes = Array.from(document.querySelectorAll('[role="main"]'));
+    if (panes.length === 0) return null;
+
+    const normExpected = expectedTitle.trim().toLowerCase();
+    let mainPane = null;
+
+    if (normExpected) {
+      mainPane = panes.find(pane => {
+        const h1 = pane.querySelector('h1');
+        const h1Text = (h1 ? h1.innerText : (pane.getAttribute('aria-label') || '')).trim().toLowerCase();
+        return h1Text && (h1Text.includes(normExpected) || normExpected.includes(h1Text));
+      });
+    }
+
+    if (!mainPane) {
+      // Pilih pane terakhir yang memiliki heading h1 atau alamat detail (panel detail umumnya muncul setelah feed)
+      const detailCandidates = panes.filter(p => p.querySelector('h1.DUwDvf') || p.querySelector('[data-item-id="address"]') || p.querySelector('h1'));
+      mainPane = detailCandidates[detailCandidates.length - 1] || panes[panes.length - 1];
+    }
+
     if (!mainPane) return null;
 
     // Nama bisnis
-    const titleEl = mainPane.querySelector('h1') || mainPane.querySelector('[role="main"] h1');
-    const title = titleEl ? titleEl.innerText.trim() : (mainPane.getAttribute('aria-label') || '');
+    const titleEl = mainPane.querySelector('h1.DUwDvf') || mainPane.querySelector('h1');
+    const title = titleEl ? titleEl.innerText.trim() : (mainPane.getAttribute('aria-label') || '').trim();
 
     if (!title) return null;
 
@@ -145,8 +174,11 @@ const MapsExtractor = {
       operatingHours = hoursEl.getAttribute('aria-label') || hoursEl.innerText.replace(/\n/g, ' ').trim();
     }
 
+    const currentUrl = window.location.href;
+    const mapsUrl = currentUrl.includes('/maps/place/') ? currentUrl.split('?')[0] : '';
+
     return {
-      id: this.cleanPlaceId(window.location.href) || this.slugify(title),
+      id: this.cleanPlaceId(currentUrl) || this.slugify(title),
       title,
       category,
       rating,
@@ -155,18 +187,49 @@ const MapsExtractor = {
       address,
       website,
       operatingHours,
-      mapsUrl: window.location.href.split('?')[0],
+      mapsUrl,
       scrapedAt: new Date().toISOString()
     };
   },
 
   /**
-   * Utility untuk membuat ID bersih dari URL
+   * Gabungkan ringkasan kartu dan panel detail secara aman tanpa menimpa nilai non-kosong atau panel yang tidak cocok
+   */
+  mergeLead(summary, panelData) {
+    if (!summary) return panelData || null;
+    if (!panelData) return summary;
+
+    const sumTitle = (summary.title || '').trim().toLowerCase();
+    const panTitle = (panelData.title || '').trim().toLowerCase();
+    if (sumTitle && panTitle && !panTitle.includes(sumTitle) && !sumTitle.includes(panTitle)) {
+      return summary;
+    }
+
+    return {
+      id: summary.id || panelData.id,
+      title: panelData.title || summary.title || '',
+      category: panelData.category || summary.category || '',
+      rating: panelData.rating !== null && panelData.rating !== undefined ? panelData.rating : summary.rating,
+      reviewCount: panelData.reviewCount || summary.reviewCount || 0,
+      phone: panelData.phone || summary.phone || '',
+      address: panelData.address || summary.address || '',
+      website: panelData.website || summary.website || '',
+      operatingHours: panelData.operatingHours || summary.operatingHours || '',
+      mapsUrl: summary.mapsUrl || panelData.mapsUrl || '',
+      scrapedAt: new Date().toISOString()
+    };
+  },
+
+  /**
+   * Utility untuk membuat ID unik bersih dari URL Google Maps (prioritas Place CID / ChIJ)
    */
   cleanPlaceId(url) {
     if (!url) return '';
-    const match = url.match(/\/place\/([^\/@?]+)/);
-    return match ? decodeURIComponent(match[1]) : url;
+    const cidMatch = url.match(/!1s(0x[0-9a-fA-F]+:0x[0-9a-fA-F]+|ChIJ[a-zA-Z0-9_-]+)/);
+    if (cidMatch) return cidMatch[1];
+
+    const placeMatch = url.match(/\/place\/([^\/@?]+)/);
+    return placeMatch ? decodeURIComponent(placeMatch[1]) : '';
   },
 
   slugify(text) {
