@@ -8,7 +8,6 @@ docs/
 # Scratch & temporary scripts
 scripts/*.ps1
 scripts/generate_icons.js
-icons/
 
 # Secrets & env
 .env

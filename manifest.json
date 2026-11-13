@@ -13,11 +13,21 @@
     "*://www.google.com/maps/*",
     "*://maps.google.com/*"
   ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "background": {
     "service_worker": "scripts/background.js"
   },
   "action": {
-    "default_title": "Buka Maps Lead Extractor"
+    "default_title": "Buka Maps Lead Extractor",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "side_panel": {
     "default_path": "popup/popup.html"
