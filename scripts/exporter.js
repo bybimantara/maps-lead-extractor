@@ -85,9 +85,9 @@ const Exporter = {
    */
   formatPhoneForExcel(phone) {
     if (!phone) return '""';
-    const clean = phone.trim().replace(/\r?\n|\r/g, ' ');
-    // Gunakan sintaks string formula ="0812..." untuk Excel
-    return `="""${clean.replace(/"/g, '')}"""`;
+    const clean = phone.trim().replace(/\r?\n|\r/g, ' ').replace(/"/g, '');
+    // Sintaks formula Excel di CSV standar: "=""0812...""" (dievaluasi Excel sebagai text '0812...')
+    return `"=""${clean}"""`;
   },
 
   triggerDownload(blob, fullFilename) {
