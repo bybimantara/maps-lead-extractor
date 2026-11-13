@@ -14,7 +14,7 @@ Runs entirely inside your browser. No external servers, no account required, and
 - **Quick Filters**: Filter results during scraping to keep only businesses with a phone number, a website URL, or both.
 - **Live Preview Search**: Search extracted records directly inside the side panel by business name, category, phone number, or address.
 - **Place ID Deduplication**: Tracks venues by Google Maps Place ID (`CID` / `ChIJ`) and URL, keeping separate branches with identical names distinct while avoiding duplicate rows.
-- **Excel-Safe CSV Export**: Prepends a UTF-8 BOM (`\uFEFF`) and wraps phone numbers in formula strings (`="08..."`) so Microsoft Excel and Google Sheets do not drop leading zeros or misinterpret country codes.
+- **Safe CSV Export**: Prepends a UTF-8 BOM (`\uFEFF`) and follows RFC 4180 quoting with OWASP formula-injection sanitization so exports open cleanly in Microsoft Excel, Google Sheets, and CRMs without executing unintended spreadsheet formulas.
 - **JSON Export**: Provides structured data ready for developer pipelines, databases, or CRM ingestion.
 - **Local Storage Persistence**: Saves progress to `chrome.storage.local` automatically so data is preserved if the panel is closed.
 
@@ -73,7 +73,9 @@ maps-lead-extractor/
 │   ├── background.js     # Background service worker (side panel management)
 │   ├── content.js        # Auto-scroll loop and runtime message handler
 │   ├── extractor.js      # Semantic DOM parsing rules for Google Maps
-│   └── exporter.js       # CSV (UTF-8 BOM + Excel formula) and JSON generator
+│   └── exporter.js       # CSV (UTF-8 BOM + RFC 4180 sanitized) and JSON generator
+├── tests/
+│   └── hardening.test.js # Zero-dependency Node.js unit and DOM fixture tests
 ├── LICENSE               # MIT License
 └── README.md             # Project documentation
 ```
