@@ -16,8 +16,8 @@ chrome.action.onClicked.addListener(async (tab) => {
 
 // Listener pesan runtime untuk background logging & event forwarder
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'PING') {
+  if (message && message.action === 'PING') {
     sendResponse({ status: 'PONG' });
   }
-  return true;
+  return false;
 });
